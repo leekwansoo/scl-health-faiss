@@ -27,8 +27,3 @@ def query_faiss_db(query):
     return chat_completion.choices[0].message
 
 
-<<<<<<< HEAD
-
-
-=======
->>>>>>> 0f003062636ca75c5fb52c2f835be0ca53754fe2
