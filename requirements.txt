@@ -1,0 +1,14 @@
+streamlit
+PyPDF2
+pymupdf
+openai
+tiktoken
+langchain
+langchain-openai
+langchain-community
+langchain-core
+langchain-chroma
+langchain-ollama
+langgraph
+faiss-cpu
+Document
