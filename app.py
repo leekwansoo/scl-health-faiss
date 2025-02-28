@@ -3,9 +3,8 @@ import io
 import os
 import json 
 from modules.pdf_reader import generate_question, parse_pdf, create_query_file, load_pdf, add_qa_file, check_query_exist
-from modules.chromadb import load_pdf_documents
 from modules.faissdb import store_pdf_documents
-from modules.query_handler import query_chroma_db, query_faiss_db
+from modules.query_handler import query_faiss_db
 from doc_handler import check_file_exist
 from graph import search_web
 from dotenv import load_dotenv
