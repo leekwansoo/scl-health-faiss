@@ -25,3 +25,8 @@ def query_faiss_db(query):
     chat_completion = client.chat.completions.create( messages=[ {"role": "user", "content": prompt} ], model="gpt-4o-mini", ) 
     
     return chat_completion.choices[0].message
+<<<<<<< HEAD
+=======
+
+
+>>>>>>> 65bb7046c1c985b92800b89eb03cfde62ffa7e3f
