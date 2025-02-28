@@ -123,8 +123,8 @@ elif options == "Query from Uploaded File":
     for query in query_list:
         i += 1    
        
-        st.sidebar.write(query)  # Display the query
-        if st.sidebar.button(f"Query", key=f"button_{i}"):  # Add a button with a unique key
+        st.write(query)  # Display the query
+        if st.button(f"Query", key=f"button_{i}"):  # Add a button with a unique key
             response = query_faiss_db(query)
             if response:
                 qa_pair = {"query": query, "answer": response.content}
