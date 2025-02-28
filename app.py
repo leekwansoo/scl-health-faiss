@@ -2,6 +2,7 @@ import streamlit as st
 import io
 import os
 import json 
+from langchain.document_loaders import TextLoader
 from modules.pdf_reader import generate_question, parse_pdf, create_query_file, load_pdf, add_qa_file, check_query_exist
 from modules.faissdb import store_pdf_documents
 from modules.query_handler import query_faiss_db
@@ -9,8 +10,13 @@ from doc_handler import check_file_exist
 from graph import search_web
 from dotenv import load_dotenv
 load_dotenv()
-os.environ["OPENAI_API_KEY"] = os.getenv("OPENAI_API_KEY")
+
 st.title("Webzine for SCL Health")
+
+openai_api_key = st.sidebar.text_input("Enter Your OPENAI_API_KEY")
+if openai_api_key:
+    os.environ["OPENAI_API_KEY"] = openai_api_key
+    st.sidebar.write("반갑습니다, Welcome to SCL-HEALTH_WEBZINE")
 
 st.session_state["DOCUMENT"] = []
 
@@ -104,12 +110,28 @@ if options == "Upload File":
             
 elif options == "Query from Uploaded File":
     st.header("Query from Uploaded File")
-    query_list = os.listdir("query")
-    selected = st.sidebar.selectbox("Select month to query", query_list)
+    query_file_list = os.listdir("query")
+    selected = st.sidebar.selectbox("Select month to query", query_file_list)
     file_name = f"query/{selected}"
-    with open(file_name, "r", encoding="utf-8") as f:
-        s = f.read()
-        st.sidebar.markdown(s)
+    # make query as list in the query_file
+    loader =TextLoader(file_name, encoding = "utf-8")
+    documents = loader.load()
+    query_list = documents[0].page_content.split("\n")
+    # Print the list
+    i = 0
+    
+    for query in query_list:
+        i += 1    
+       
+        st.sidebar.write(query)  # Display the query
+        if st.sidebar.button(f"Query", key=f"button_{i}"):  # Add a button with a unique key
+            response = query_faiss_db(query)
+            if response:
+                qa_pair = {"query": query, "answer": response.content}
+                qa_file = add_qa_file(file_name, qa_pair)
+                st.write(response.content)
+                st.write(f"QA pair is saved in {qa_file}")
+  
         
     main_query(file_name) 
           
