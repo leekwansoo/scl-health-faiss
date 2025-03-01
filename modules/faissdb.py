@@ -44,7 +44,7 @@ def store_pdf_documents(documents):
     # 로컬 Disk 에 저장
     db.save_local(folder_path="faiss_db", index_name="faiss_index")
     response = "documents are stored in faiss)"
-    print(db.index_to_docstore_id)
+    #print(db.index_to_docstore_id)
     return response
    
    
@@ -52,5 +52,5 @@ def store_pdf_documents(documents):
 def search_documents(query, k):
     # return as documents
     results = db.similarity_search(query, k=k)
-    print(results)
+    #print(results)
     return results
