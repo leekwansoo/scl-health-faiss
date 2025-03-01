@@ -45,22 +45,7 @@ def list_documents():
     else: st.write("No documents found in 'DOCUMENT'.")
 
 # Main Page content 
-def main_query(file_name):
-    query = st.text_input("Enter your question for your uploaded documents:") 
-    if query: 
-        # check if query is in the file
-        response = check_query_exist(file_name, query)
-        if response:
-            st.write(response["answer"])
-            #print("same question")
-        else:
-            #response = query_chroma_db(query)
-            response = query_faiss_db(query)
-            if response:
-                qa_pair = {"query": query, "answer": response.content}
-                qa_file = add_qa_file(file_name, qa_pair)
-                st.write(response.content)
-                st.write(f"QA pair is saved in {qa_file}")
+
 
 def handle_query(file_name, query):
     response =check_query_exist(file_name, query)
@@ -130,22 +115,19 @@ elif options == "Query from Uploaded File":
     loader =TextLoader(file_name, encoding = "utf-8")
     documents = loader.load()
     query_list = documents[0].page_content.split("\n")
-    #print(query_list)
-    
-    i = 0
-    for query in query_list:
-        i += 1    
-        st.sidebar.write(query)
-        if "?" in query:
-            button = st.sidebar.button("Query", key=i)# Display the query
-            if button:
-                handle_query(file_name, query)
-           
-        # check if query is in the file
-    query_input = st.text_input("Enter your Query here") 
-    if query_input:   
+    query_input = st.text_input("Enter your question for your uploaded documents")
+    if query_input:
         handle_query(file_name, query_input)
         
+    i = 0
+    for query in query_list:
+        i += 1           
+        st.sidebar.write(query)  # Display the query
+        if "?" in query:
+            button = st.sidebar.button(f"Query", key=f"button_{i}")
+            if button:# Add a button with a unique key
+                handle_query(file_name, query)
+         
           
 elif options == "Web Search":
     st.header("Web Search")
