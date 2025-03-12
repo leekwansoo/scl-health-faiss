@@ -1,8 +1,11 @@
 # modules/qa_module.py
+import streamlit as st 
 import openai
 from openai import OpenAI
 from langchain_openai import OpenAIEmbeddings
 from modules.faissdb import search_documents
+
+
 import numpy as np
 from dotenv import load_dotenv
 load_dotenv()
@@ -13,6 +16,7 @@ client=OpenAI()
 def answer_question(question, context):
     chat_completion = client.chat.completions.create( messages=[ {"role": "user", "content": question} ], model="gpt-4o-mini", ) 
     return chat_completion.choices[0].message['content'].strip()
+
 
 def query_faiss_db(query):     
     results = search_documents(query, k=1) 
