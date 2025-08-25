@@ -2,10 +2,19 @@
 import json
 from pathlib import Path
 import os
+from PIL import Image
+import pytesseract
+import csv
 from PyPDF2 import PdfReader
 from langchain_community.document_loaders import PyPDFLoader
 from langchain.text_splitter import CharacterTextSplitter
 from langchain_openai import ChatOpenAI
+import google.generativeai as genai
+
+from dotenv import load_dotenv
+load_dotenv()
+
+google_api_key = os.getenv("GOOGLE_API_KEY")
 
 model = "gpt-4o-mini"
 
@@ -40,11 +49,20 @@ def check_file_exist(dir, file_name):
         if file == file_name:
             file_exist = True
             return file_exist
-     
+
+def generate_question_with_genai(text):
+    prompt = f"Please generate questions from the given {text}/,the questionnaire should be in same language as given text/the generated query form should be json format like {{\"question\": \"\"}}/don't generate answer"
+
+    # Set your API key (you can also set it as an environment variable)
+    genai.configure(api_key=google_api_key)
+    model = genai.GenerativeModel("gemini-2.5-pro")
+    response = model.generate_content(prompt)
+    questions = response.text  # or response.candidates[0].text for some versions
+    return questions   
 
 def generate_question(text):
-    prompt = f"Please generate questions fromthe given {text}/,the questionnare should be in same language as given text"
-  
+    prompt = f"Please generate questions from the given {text}/,the questionnare should be in same language as given text/the generated query form should be json format like {{\"question\": \"\"}}/don.t generate answer"
+
     llm = ChatOpenAI(model= model, temperature = 0.2)
     questions = llm.invoke(prompt)
     return questions
@@ -79,12 +97,12 @@ def add_qa_file(file_name, qa_pair):
     return qa_file
 
 # if query already exist return the query and answer
-def check_query_exist(file_name, query):
+def check_qafile_exist(file_name, query):
     # convert file_name to qa_file
     file_name = file_name.split('.')[0].split('/')[1]
     qa_file = f"{file_name}" + "_qa.txt"
     qa_files = os.listdir("qa_pair")
-    # if file is existing in the qa_files_list then rad the json file
+    # if file is existing in the qa_files_list then read the json file
     for file in qa_files:
         #print(file)
         if qa_file == file:
@@ -97,4 +115,25 @@ def check_query_exist(file_name, query):
                     #print(qa_pair)
                     return qa_pair
     return None
-    
+
+def extract_text_from_image(image_path):
+    print(image_path)
+    """
+    Extract text from a .jpg image using OCR (pytesseract).
+    """
+    image = Image.open(image_path)
+    text = pytesseract.image_to_string(image, lang='eng+kor')
+    return text
+
+def save_text_as_csv(image_path, text):
+    """
+    Save extracted text from image as a CSV file (one row).
+    Returns the CSV file path.
+    """
+    base = os.path.splitext(os.path.basename(image_path))[0]
+    csv_path = os.path.join("uploaded", f"{base}.csv")
+    with open(csv_path, "w", encoding="utf-8", newline='') as csvfile:
+        writer = csv.writer(csvfile)
+        writer.writerow(["text"])
+        writer.writerow([text])
+    return csv_path
