@@ -2,6 +2,8 @@ streamlit
 pypdf
 PyPDF2
 pymupdf
+pytesseract
+pillow
 openai
 tiktoken
 langchain
