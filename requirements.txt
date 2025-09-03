@@ -16,3 +16,6 @@ langgraph
 faiss-cpu
 Document
 google-generativeai
+fastapi
+uvicorn[standard]
+python-multipart

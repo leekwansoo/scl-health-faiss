@@ -1,4 +1,42 @@
 Open AI 를 이용하여 Upload된 건강생활 잡지 PDF File 에서부터 Query 를 추출하고 Query file 과 Query-Answer pair file 로 webzine Reader Service를 제공함
+
+## API Access for External Applications
+
+This repository now includes a RESTful API (`api_server.py`) that allows external applications to access the document processing and Q&A functionality using token-based authentication.
+
+### Quick Start - API Server
+
+1. **Configure API Token**: Copy `.env.example` to `.env` and set your API tokens and OpenAI key
+2. **Start API Server**: `python api_server.py`
+3. **Access API**: Server runs on `http://localhost:8000`
+
+### API Endpoints
+
+- **POST** `/api/upload` - Upload PDF documents
+- **GET** `/api/documents` - List uploaded documents  
+- **POST** `/api/query` - Query the FAISS database
+- **POST** `/api/generate-queries` - Generate queries from documents
+- **GET** `/health` - Health check
+
+### Example Usage
+
+```bash
+# List documents
+curl -H "Authorization: Bearer your-api-token" http://localhost:8000/api/documents
+
+# Upload document
+curl -X POST -H "Authorization: Bearer your-api-token" \
+     -F "file=@document.pdf" http://localhost:8000/api/upload
+
+# Query documents
+curl -X POST -H "Authorization: Bearer your-api-token" \
+     -F "query=What is the main topic?" http://localhost:8000/api/query
+```
+
+See `API_DOCUMENTATION.md` for complete documentation and `api_client_example.py` for Python integration examples.
+
+## Application Components
+
 app.py:  Streamlit Entry
 mainapp.py:  Webzine Service Main Flow 
   Functions: Main Menu
